@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <title>Break Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="alignedTimers.js"></script>
+  <style>
+    body {
+        height: 100%;
+        color: #c0c0c0;
+        font-size: 70px;
+        text-align: center;
+        font-family: monospace;
+        background-color: #0f0f0f;
+    }
+
+    #clock {
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        display: inline-block;
+        transform: translate(-50%,-50%);
+    }
+  </style>
+ <head>
+ <body>
+  <div id="clock">
+    <div id="label"></div>
+    <span id="minutes"></span>:<span id="seconds"></span>
+  </div>
+  <script>
+    const num = ['minutes', 'seconds'].map((l) => document.getElementById(l))
+    const label = document.getElementById('label')
+    const states = ['Break', 'Work']
+
+    const timers = new AlignedTimers()
+      .on('next', (i, d) => ({
+          target: new Date(d.setHours(Math.floor(i/4), [0, 25, 30, 55][i%4], 0)),
+          state: i%2
+      }))
+      .on('tick', (r) => [Math.floor(r/60), r%60].forEach((v, i) => {
+          num[i].innerHTML = v<10?`0${v}`:v
+      }))
+      .on('end', (s) => notify('Time up!', `${states[s]} over`))
+      .on('change', (s) => { label.innerHTML = states[s] })
+      .start()
+
+    function notify(title, body) {
+      console.log(`${title} - ${body}`)
+    }
+  </script>
+ </body>
+</html>
