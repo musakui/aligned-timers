@@ -34,21 +34,23 @@
     const num = ['minutes', 'seconds'].map((l) => document.getElementById(l))
     const label = document.getElementById('label')
     const states = ['Break', 'Work']
+    const mins = [0, 25, 30, 55]
+
+    const f = (i) => [Math.floor(i / mins.length), mins[i % mins.length], 0]
 
     const timers = new AlignedTimers()
       .on('next', (i, d) => ({
-          target: new Date(d.setHours(Math.floor(i/4), [0, 25, 30, 55][i%4], 0)),
-          state: i%2
+          target: new Date(d.setHours(...f(i))),
+          state: i % 2
       }))
-      .on('tick', (r) => [Math.floor(r/60), r%60].forEach((v, i) => {
-          num[i].innerHTML = v<10?`0${v}`:v
+      .on('tick', (r) => [Math.floor(r / 60), r % 60].forEach((v, i) => {
+          num[i].innerHTML = v < 10 ? `0${v}` : v
       }))
       .on('end', (s) => notify('Time up!', `${states[s]} over`))
       .on('change', (s) => { label.innerHTML = states[s] })
       .start()
 
     function notify(title, body) {
-      console.log(`${title} - ${body}`)
       const notif = new Notification(title, {body})
       notif.onclick = (e) => { e.preventDefault() }
     }
